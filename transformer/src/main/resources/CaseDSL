@@ -1,0 +1,32 @@
+Rule {
+  from input: EntryStationRecord
+  	to output: EntryTrafficTransaction {
+    	车辆ID <- EntryStationRecord.车辆ID,
+    	通行介质类型 <- EntryStationRecord.通行介质类型,
+    	通行介质编号 <- EntryStationRecord.通行介质编号,
+    	经过站点信息 <- [EntryStationRecord.车站ID, EntryStationRecord.时间, 0, 0, "收费站", EntryStationRecord.收费站经度, EntryStationRecord.收费站纬度, EntryStationRecord.收费站名称],
+    	入口识别车辆ID <- EntryStationRecord.入口识别车辆ID,
+    	入口重量 <- EntryStationRecord.入口重量
+  	}
+  	,
+  from input: GantryRecord
+    to output: GantryTrafficTransaction {
+   		通行交易ID <- GantryRecord.通行交易ID,
+     	车辆ID <- GantryRecord.车辆ID,
+     	通行介质类型 <- GantryRecord.通行介质类型,
+     	通行介质编号 <- GantryRecord.通行介质编号,
+     	经过站点信息 <- GantryRecord.allInstances() -> collect(e | [e.门架ID, e.时间, e.计费里程, e.计费金额, "门架", e.门架经度, e.门架纬度, e.门架名称])
+    }
+    ,
+  from input: ExitStationRecord
+   	to output: ExitTrafficTranscation {
+   		通行交易ID <- ExitStationRecord.通行交易ID,
+     	车辆ID <- ExitStationRecord.车辆ID,
+     	通行介质类型 <- ExitStationRecord.通行介质类型,
+     	通行介质编号 <- ExitStationRecord.通行介质编号,
+     	经过站点信息 <- [ExitStationRecord.车站ID, ExitStationRecord.时间, ExitStationRecord.计费里程, ExitStationRecord.计费金额, 收费站, ExitStationRecord.收费站经度, ExitStationRecord.收费站纬度, ExitStationRecord.收费站名称],
+     	出口识别车辆ID <- ExitStationRecord.出口识别车辆ID,
+     	出口重量 <- ExitStationRecord.出口重量
+   	}
+
+}

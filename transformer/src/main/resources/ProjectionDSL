@@ -1,0 +1,7 @@
+Rule {
+  from input: EntryStationRecord
+  to output: EntryTrafficTransaction {
+   	PASSID <- EntryStationRecord.PASSID,
+   	SITEID <- EntryStationRecord.ENTOLLSTATIONID
+  }
+}

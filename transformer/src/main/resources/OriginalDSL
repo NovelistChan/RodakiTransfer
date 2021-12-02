@@ -1,0 +1,24 @@
+Rule GenerateTransaction {
+  from inputs: inStationRecord, outStationRecord, gantryRecord {
+		inStationRecord.通行交易ID = outStationRecord.通行交易ID and outStationRecord.通行交易ID = gantryRecord.通行交易ID and
+		inStationRecord.车辆ID = outStationRecord.车辆ID and outStationRecord.车辆ID = gantryRecord.车辆ID and
+		inStationRecord.通行介质类型 = outStationRecord.通行介质类型 and outStationRecord.通行介质类型 = gantryRecord.通行介质类型 and
+		inStationRecord.通行介质编号 = outStationRecord.通行介质编号 and outStationRecord.通行介质编号 = gantryRecord.通行介质编号; //keyBy
+  }
+  to output: TrafficTransaction {
+  	通行交易ID <- inStationRecord.通行交易ID,
+  	车辆ID <- inStationRecord.车辆ID,
+  	通行介质类型 <- inStationRecord.通行介质类型,
+  	通行介质编号 <- inStationRecord.通行介质编号,
+  	经过站点信息 <- [
+  	[inStationRecord.车站ID, inStationRecord.时间, 0, 0, 收费站, inStationRecord.收费站经度, inStationRecord.收费站纬度, inStationRecord.收费站名称],
+  	[outStationRecord.车站ID, outStationRecord.时间, outStationRecord.计费里程, outStationRecord.计费金额, 收费站, outStationRecord.收费站经度, outStationRecord.收费站纬度, outStationRecord.收费站名称],
+  	gantryRecord.allInstances() -> collect(e | [e.门架ID, e.时间, e.计费里程, e.计费金额, 门架, e.门架经度, e.门架纬度, e.门架名称])
+  	]
+  }
+  	支付记录ID <- outStationRecord.支付记录ID
+  	入口识别车辆ID <- inStationRecord.入口识别车辆ID
+  	出口识别车辆ID <- outStationRecord.出口识别车辆ID
+  	入口重量 <- inStationRecord.入口重量
+  	出口重量 <- outStationRecord.出口重量
+}
