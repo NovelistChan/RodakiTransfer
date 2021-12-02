@@ -8,6 +8,6 @@ import lombok.Data;
 //@AllArgsConstructor
 //@NoArgsConstructor
 @Data
-public class AggregationDescriptor {
+class AggregationDescriptor {
 
 }

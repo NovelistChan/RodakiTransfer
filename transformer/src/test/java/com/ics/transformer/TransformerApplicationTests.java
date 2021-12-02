@@ -27,8 +27,11 @@ class TransformerApplicationTests {
     @Test
     void readTest() {
         DSLReader reader = new DSLReader(
-            "/Users/novelistchan/Documents/RodakiTransfer/transformer/src/main/resources/ProjectionDSL");
-//        System.out.println(reader.inputName);
+            "/Users/novelistchan/Documents/RodakiTransfer/transformer/src/main/resources/ProjectionDSLMultiSrc");
+//        for (String name : reader.getInputNameList()) {
+//            System.out.println(name);
+//        }
+        reader.printProjectorPairs();
 //        System.out.println(reader.outputName);
     }
 

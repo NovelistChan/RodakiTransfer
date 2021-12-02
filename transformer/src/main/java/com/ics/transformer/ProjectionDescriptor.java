@@ -13,16 +13,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProjectionDescriptor {
+class ProjectionDescriptor {
 
-    String inputModelName;
-    String outputModelName;
+    private String inputModelName;
+    private String outputModelName;
 
-    ArrayList<Pair<String, String>> projectionPair;
+    private ArrayList<Pair<String, String>> projectionPair;
+
+    ProjectionDescriptor(String inputModelName, String outputModelName) {
+        this.inputModelName = inputModelName;
+        this.outputModelName = outputModelName;
+        this.projectionPair = new ArrayList<>();
+    }
 
     StringBuilder projection() {
         StringBuilder sb1 = new StringBuilder();
-        sb1.append("\n");
         sb1.append("SingleOutputStreamOperator<Map> ").append(this.inputModelName).append("Output")
             .append(this.outputModelName).append(" = ").append(this.inputModelName)
             .append("OutputStream\n").append("\t\t\t\t.map(new MapFunction<Map, Map>() {")
@@ -37,5 +42,9 @@ public class ProjectionDescriptor {
             + "\t\t\t\t\t}\n"
             + "\t\t\t\t});;");
         return sb1;
+    }
+
+    public void addPair(Pair<String, String> pair) {
+        this.projectionPair.add(pair);
     }
 }

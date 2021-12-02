@@ -8,7 +8,7 @@ import lombok.Data;
 //@AllArgsConstructor
 //@NoArgsConstructor
 @Data
-public class TransformationDescriptor {
+class TransformationDescriptor {
 
     String inputModelName;
     String outputModelName;
