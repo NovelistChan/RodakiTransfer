@@ -1,0 +1,6 @@
+Rule {
+  from input: EntryStationRecord
+  to output: TrafficTransaction {
+   	TOTAL <- ( ( EntryStationRecord.BASEVAL + 1 ) * EntryStationRecord.BASEVAL )
+  }
+}

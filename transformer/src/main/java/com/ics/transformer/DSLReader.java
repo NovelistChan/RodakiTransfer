@@ -44,18 +44,68 @@ class DSLReader {
         return OperationType.NONE;
     }
 
-    public void printProjectorPairs() {
-        for (ProjectionDescriptor pd : projectionDescriptors) {
-            if (!pd.getProjectionPair().isEmpty()) {
-                System.out.println(
-                    pd.getInputModelName() + " project to " + pd.getOutputModelName());
-                StringBuilder sb = pd.projection();
-                System.out.println(sb);
+    public void printTransformation() {
+        for (TransformationDescriptor td : transformationDescriptors) {
+            if (!td.getFormulationList().isEmpty()) {
+                System.out.println(td.transformation());
             }
         }
     }
 
-    void initial() {
+    public void printProjectorPairs() {
+        int cnt = 0;
+        for (ProjectionDescriptor pd : projectionDescriptors) {
+            if (!pd.getProjectionPair().isEmpty()) {
+                cnt++;
+//                System.out.println(
+//                    pd.getInputModelName() + " project to " + pd.getOutputModelName());
+                StringBuilder sb = pd.projection();
+                System.out.println(sb);
+            }
+        }
+        if (cnt >= 2) {
+            StringBuilder sb = new StringBuilder();
+            int index = 0;
+            for (ProjectionDescriptor pd : projectionDescriptors) {
+                if (!pd.getProjectionPair().isEmpty()) {
+                    index++;
+                    if (index == 1) {
+                        sb.append("DataStream<TrafficTransaction> ").append(pd.getStreamName())
+                            .append(" = ")
+                            .append(pd.getInputModelName())
+                            .append(".union(");
+                    } else if (index == 2) {
+                        sb.append(pd.getInputModelName());
+                    } else {
+                        sb.append(", ").append(pd.getInputModelName());
+                    }
+                }
+            }
+            sb.append(");");
+            System.out.println(sb);
+        }
+    }
+
+    private void addTransformDefinition(String toModelName, String formulation) {
+        if (this.transformationDescriptors.isEmpty()) {
+            return;
+        }
+        String fromName = " ";
+        String[] elementList = formulation.split(" ");
+        for (String element : elementList) {
+            if (element.contains(".")) {
+                fromName = element.split("\\.")[0];
+                break;
+            }
+        }
+        for (TransformationDescriptor td : transformationDescriptors) {
+            if (td.getInputModelName().equals(fromName)) {
+                td.addFormulation(toModelName, formulation);
+            }
+        }
+    }
+
+    private void initial() {
         this.projectionDescriptors = new ArrayList<>();
         this.aggregationDescriptors = new ArrayList<>();
         this.transformationDescriptors = new ArrayList<>();
@@ -78,14 +128,19 @@ class DSLReader {
             // 创建 projectionDescriptors
             for (String name : inputNameList) {
                 projectionDescriptors.add(new ProjectionDescriptor(name, outputName));
+                transformationDescriptors.add(new TransformationDescriptor(name, outputName));
             }
+
             while (!(str = in.readLine()).contains("}")) {
+                String toElement, fromElement, fromName;
                 switch (getOperationType(str)) {
                     case PROJECTION:
                         str = str.replace(" ", "").replace(",", "");
-                        String toElement = str.split("<-")[0].replace(" ", "");
-                        String fromElement = str.split("<-")[1].replace(".", " ").split(" ")[1];
-                        String fromName = str.split("<-")[1].replace(".", " ").split(" ")[0];
+                        toElement = str.split("<-")[0].replace("\t", "");
+//                        System.out.println("toElement: " + toElement);
+//                        System.out.println("replace: " + toElement.replace("\t", ""));
+                        fromElement = str.split("<-")[1].replace(".", " ").split(" ")[1];
+                        fromName = str.split("<-")[1].replace(".", " ").split(" ")[0];
                         Pair<String, String> pair = new Pair<>(fromElement, toElement);
                         for (ProjectionDescriptor pd : projectionDescriptors) {
                             if (pd.getInputModelName().equals(fromName)) {
@@ -94,12 +149,18 @@ class DSLReader {
                         }
                         break;
                     case TRANSFORMATION:
+                        str = str.replace(",", "");
+                        toElement = str.split(" <- ")[0].replace("\t", "").replace(" ", "");
+                        String formulation = str.split(" <- ")[1];
+                        addTransformDefinition(toElement, formulation);
+                        break;
                     case AGGREGATION:
                     default:
                         break;
                 }
             }
-        } catch (IOException e) {
+        } catch (
+            IOException e) {
         }
     }
 }

@@ -1,6 +1,6 @@
 Rule {
   from input: EntryStationRecord, ExitStationRecord
-  to output: EntryTrafficTransaction {
+  to output: TrafficTransaction {
    	PASSID <- EntryStationRecord.PASSID,
    	SITEID <- EntryStationRecord.ENTOLLSTATIONID,
    	EXITWEIGHT <- ExitStationRecord.EXITWEIGHT

@@ -17,13 +17,14 @@ class ProjectionDescriptor {
 
     private String inputModelName;
     private String outputModelName;
-
+    private String streamName;
     private ArrayList<Pair<String, String>> projectionPair;
 
     ProjectionDescriptor(String inputModelName, String outputModelName) {
         this.inputModelName = inputModelName;
         this.outputModelName = outputModelName;
         this.projectionPair = new ArrayList<>();
+        this.streamName = this.inputModelName + "Output" + this.outputModelName;
     }
 
     StringBuilder projection() {
@@ -40,7 +41,7 @@ class ProjectionDescriptor {
         }
         sb1.append("\t\t\t\t\t\treturn result;\n"
             + "\t\t\t\t\t}\n"
-            + "\t\t\t\t});;");
+            + "\t\t\t\t});");
         return sb1;
     }
 
