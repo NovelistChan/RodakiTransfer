@@ -1,4 +1,4 @@
-package com.ics.transformer;
+package com.ics.transformer.descriptors;
 
 import java.util.ArrayList;
 import javafx.util.Pair;
@@ -12,62 +12,35 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-class TransformationDescriptor {
+public
+class TransformationDescriptor extends OperationDescriptor {
 
     private ArrayList<Pair<String, String>> formulationList;
     private String inputModelName;
     private String outputModelName;
 
 
-    enum CalculationType {
-        PLUS, MIN, MUL, DIV, AND, OR
-    }
-
-    String transOperation(CalculationType ct) {
-        String toct = "NONE";
-        switch (ct) {
-            case PLUS:
-                toct = "+";
-                break;
-            case MIN:
-                toct = "-";
-                break;
-            case DIV:
-                toct = "/";
-                break;
-            case MUL:
-                toct = "*";
-                break;
-            case AND:
-                toct = "&&";
-                break;
-            case OR:
-                toct = "||";
-                break;
-            default:
-                break;
-        }
-        return toct;
-    }
-
-    TransformationDescriptor(String inputModelName, String outputModelName) {
+    public TransformationDescriptor(String inputModelName, String outputModelName) {
         this.inputModelName = inputModelName;
         this.outputModelName = outputModelName;
         this.formulationList = new ArrayList<>();
+        this.streamName = "TransformationOutput" + this.outputModelName;
     }
 
-    void addFormulation(String outputElementName, String formulation) {
+    public void addFormulation(String outputElementName, String formulation) {
         this.formulationList.add(new Pair<String, String>(outputElementName, formulation));
     }
 
-    StringBuilder transformation() {
+    public StringBuilder transformation() {
         StringBuilder sb1 = new StringBuilder();
-        sb1.append("SingleOutputStreamOperator<Map> ").append("Output")
+        sb1.append("SingleOutputStreamOperator<JSONObject> ").
+            append(this.inputModelName).append("Transform")
             .append(this.outputModelName).append(" = ").append(this.inputModelName)
-            .append("OutputStream\n").append("\t\t\t\t.map(new MapFunction<Map, Map>() {")
+            .append("OutputStream\n")
+            .append("\t\t\t\t.map(new MapFunction<JSONObject, JSONObject>() {")
             .append("\n").append("\t\t\t\t\t@Override\n")
-            .append("\t\t\t\t\tpublic Map map(Map value) throws Exception {\n")
-            .append("\t\t\t\t\t\tMap<String, Object> result = new HashMap<String, Object>();\n");
+            .append("\t\t\t\t\tpublic JSONObject map(JSONObject value) throws Exception {\n")
+            .append("\t\t\t\t\t\tJSONObject result = new JSONObject();\n");
         ;
         for (Pair<String, String> pair : formulationList) {
             String outputElementName = pair.getKey();

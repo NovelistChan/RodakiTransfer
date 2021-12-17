@@ -2,6 +2,8 @@ package com.ics.transformer;
 
 import java.util.ArrayList;
 import javafx.util.Pair;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -47,7 +49,8 @@ class TransformerApplicationTests {
     }
 
     @Test
-    void aggregationTest() {
-
+    void aggregationTest() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.get("asd");
     }
 }

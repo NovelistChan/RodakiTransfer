@@ -1,8 +1,18 @@
 Rule {
-  from input: EntryStationRecord, ExitStationRecord
+  from input: EntryStationRecord, ExitStationRecord, GantryRecord
   to output: TrafficTransaction {
    	PASSID <- EntryStationRecord.PASSID,
-   	SITEID <- EntryStationRecord.ENTOLLSTATIONID,
-   	EXITWEIGHT <- ExitStationRecord.EXITWEIGHT
+    VEHICLEID <- EntryStationRecord.VEHICLEID,
+   	MEDIAID <- EntryStationRecord.MEDIAID,
+   	MEDIATYPE <- EntryStationRecord.MEDIATYPE,
+   	ENWEIGHT <- EntryStationRecord.ENWEIGHT,
+   	ENIDENTIFY <- EntryStationRecord.ENIDENTIFY,
+   	EXWEIGHT <- ExitStationRecord.EXWEIGHT,
+   	PAYID <- ExitStationRecord.PAYID,
+   	EXIDENTIFY <- ExitStationRecord.EXIDENTIFY,
+   	PASSID <- ExitStationRecord.PASSID,
+    VEHICLEID <- ExitStationRecord.VEHICLEID,
+    PASSID <- GantryRecord.PASSID,
+    VEHICLEID <- GantryRecord.VEHICLEID
   }
 }

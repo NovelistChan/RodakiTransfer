@@ -2,6 +2,10 @@ Rule {
   from input: EntryStationRecord
   to output: EntryTrafficTransaction {
    	PASSID <- EntryStationRecord.PASSID,
-   	SITEID <- EntryStationRecord.ENTOLLSTATIONID
+   	VEHICLEID <- EntryStationRecord.VEHICLEID,
+   	MEDIAID <- EntryStationRecord.MEDIAID,
+   	MEDIATYPE <- EntryStationRecord.MEDIATYPE,
+   	ENWEIGHT <- EntryStationRecord.ENWEIGHT,
+   	ENIDENTIFY <- EntryStationRecord.ENIDENTIFY
   }
 }

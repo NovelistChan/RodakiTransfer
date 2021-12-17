@@ -1,5 +1,9 @@
 package com.ics.transformer;
 
+import com.ics.transformer.descriptors.AggregationDescriptor;
+import com.ics.transformer.descriptors.OperationDescriptor;
+import com.ics.transformer.descriptors.ProjectionDescriptor;
+import com.ics.transformer.descriptors.TransformationDescriptor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -45,10 +49,46 @@ class DSLReader {
     }
 
     public void printTransformation() {
+        int cnt = 0;
         for (TransformationDescriptor td : transformationDescriptors) {
             if (!td.getFormulationList().isEmpty()) {
+                cnt++;
                 System.out.println(td.transformation());
             }
+        }
+        if (cnt >= 2) {
+            StringBuilder sb = new StringBuilder();
+            int index = 0;
+            for (TransformationDescriptor td : transformationDescriptors) {
+                if (!td.getFormulationList().isEmpty()) {
+                    index++;
+                }
+                printUnion(sb, index, td.getStreamName(), td.getInputModelName(),
+                    td.getOutputModelName(), td);
+            }
+            sb.append(");");
+            System.out.println(sb);
+        }
+    }
+
+    private void printUnion(StringBuilder sb, int index, String streamName, String inputModelName,
+        String outputModelName, OperationDescriptor od) {
+        if (index == 1) {
+            sb.append("DataStream<JSONObject> ")
+                .append(streamName)
+                .append(" = ")
+                .append(inputModelName)
+                .append("Project")
+                .append(outputModelName)
+                .append(".union(");
+        } else if (index == 2) {
+            sb.append(inputModelName)
+                .append("Project")
+                .append(outputModelName);
+        } else {
+            sb.append(", ").append(inputModelName)
+                .append("Project")
+                .append(outputModelName);
         }
     }
 
@@ -57,10 +97,7 @@ class DSLReader {
         for (ProjectionDescriptor pd : projectionDescriptors) {
             if (!pd.getProjectionPair().isEmpty()) {
                 cnt++;
-//                System.out.println(
-//                    pd.getInputModelName() + " project to " + pd.getOutputModelName());
-                StringBuilder sb = pd.projection();
-                System.out.println(sb);
+                System.out.println(pd.projection());
             }
         }
         if (cnt >= 2) {
@@ -69,16 +106,8 @@ class DSLReader {
             for (ProjectionDescriptor pd : projectionDescriptors) {
                 if (!pd.getProjectionPair().isEmpty()) {
                     index++;
-                    if (index == 1) {
-                        sb.append("DataStream<TrafficTransaction> ").append(pd.getStreamName())
-                            .append(" = ")
-                            .append(pd.getInputModelName())
-                            .append(".union(");
-                    } else if (index == 2) {
-                        sb.append(pd.getInputModelName());
-                    } else {
-                        sb.append(", ").append(pd.getInputModelName());
-                    }
+                    printUnion(sb, index, pd.getStreamName(), pd.getInputModelName(),
+                        pd.getOutputModelName(), pd);
                 }
             }
             sb.append(");");

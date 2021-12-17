@@ -1,4 +1,4 @@
-package com.ics.transformer;
+package com.ics.transformer.descriptors;
 
 import java.util.ArrayList;
 import javafx.util.Pair;
@@ -13,32 +13,35 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-class ProjectionDescriptor {
+public
+class ProjectionDescriptor extends OperationDescriptor {
 
     private String inputModelName;
     private String outputModelName;
-    private String streamName;
     private ArrayList<Pair<String, String>> projectionPair;
 
-    ProjectionDescriptor(String inputModelName, String outputModelName) {
+    public ProjectionDescriptor(String inputModelName, String outputModelName) {
         this.inputModelName = inputModelName;
         this.outputModelName = outputModelName;
         this.projectionPair = new ArrayList<>();
-        this.streamName = this.inputModelName + "Output" + this.outputModelName;
+        this.streamName = "ProjectionOutput" + this.outputModelName;
     }
 
-    StringBuilder projection() {
+    public StringBuilder projection() {
         StringBuilder sb1 = new StringBuilder();
-        sb1.append("SingleOutputStreamOperator<Map> ").append(this.inputModelName).append("Output")
+        sb1.append("SingleOutputStreamOperator<JSONObject> ").append(this.inputModelName)
+            .append("Project")
             .append(this.outputModelName).append(" = ").append(this.inputModelName)
-            .append("OutputStream\n").append("\t\t\t\t.map(new MapFunction<Map, Map>() {")
+            .append("OutputStream\n")
+            .append("\t\t\t\t.map(new MapFunction<JSONObject, JSONObject>() {")
             .append("\n").append("\t\t\t\t\t@Override\n")
-            .append("\t\t\t\t\tpublic Map map(Map value) throws Exception {\n")
-            .append("\t\t\t\t\t\tMap<String, Object> result = new HashMap<String, Object>();\n");
+            .append("\t\t\t\t\tpublic JSONObject map(JSONObject value) throws Exception {\n")
+            .append("\t\t\t\t\t\tJSONObject result = new JSONObject();\n");
         for (Pair<String, String> pair : projectionPair) {
             sb1.append("\t\t\t\t\t\tresult.put(\"").append(pair.getValue())
                 .append("\", value.get(\"").append(pair.getKey()).append("\"));\n");
         }
+
         sb1.append("\t\t\t\t\t\treturn result;\n"
             + "\t\t\t\t\t}\n"
             + "\t\t\t\t});");

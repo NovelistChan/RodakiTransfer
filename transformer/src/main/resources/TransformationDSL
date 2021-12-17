@@ -1,6 +1,11 @@
 Rule {
-  from input: EntryStationRecord
+  from input: EntryStationRecord, ExitStationRecord
   to output: TrafficTransaction {
-   	TOTAL <- ( ( EntryStationRecord.BASEVAL + 1 ) * EntryStationRecord.BASEVAL )
+   	TOTAL <- ( ( EntryStationRecord.BASEVAL + 1 ) * EntryStationRecord.BASEVAL ),
+   	TOTALB <- ( ExitStationRecord.SPECIALVAL / 2 )
   }
 }
+
+SELECT (( EntryStationRecord.BASEVAL + 1 ) * EntryStationRecord.BASEVAL) as TOTAL, (ExitStationRecord.SPECIALVAL / 2)
+as TOTALB
+FROM EntryStationRecord, ExitStationRecord
